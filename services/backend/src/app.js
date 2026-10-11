@@ -4,7 +4,7 @@ const app = express();
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok", service: "backend-v2" });
+  res.json({ status: "ok", service: "backend" });
 });
 
 // TODO (backend lead): mount routers -> /auth, /bookings, /matching, /payments, /tracking
