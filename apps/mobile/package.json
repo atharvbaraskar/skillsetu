@@ -1,0 +1,9 @@
+{
+  "name": "skillsetu-mobile",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"no lint yet - replace after scaffolding\"",
+    "test": "echo \"no tests yet - replace after scaffolding\""
+  }
+}

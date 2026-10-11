@@ -1,0 +1,10 @@
+{
+  "name": "skillsetu-admin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"no lint yet - replace after scaffolding\"",
+    "test": "echo \"no tests yet - replace after scaffolding\"",
+    "build": "echo \"no build yet - replace after scaffolding\""
+  }
+}

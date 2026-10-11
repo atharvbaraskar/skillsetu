@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: skillsetu
+      POSTGRES_PASSWORD: skillsetu
+      POSTGRES_DB: skillsetu
+    ports: ["5432:5432"]
+    volumes: [dbdata:/var/lib/postgresql/data]
+
+  backend:
+    build: ../services/backend
+    env_file: ../.env
+    ports: ["4000:4000"]
+    depends_on: [db, ai]
+
+  ai:
+    build: ../services/ai
+    ports: ["8000:8000"]
+
+volumes:
+  dbdata:

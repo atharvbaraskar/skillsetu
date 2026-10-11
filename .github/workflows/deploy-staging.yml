@@ -1,0 +1,44 @@
+name: Deploy (staging)
+
+# Runs only after a PR is merged to main (or manually). Production deploys use a GitHub
+# Environment with a required reviewer so nobody can ship by accident.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish-images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, ai]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: services/${{ matrix.service }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.service }}:staging
+
+  deploy-staging:
+    needs: publish-images
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy
+        run: |
+          echo "TODO: pick ONE target and replace this step."
+          echo "Options: Render / Railway / Fly.io webhook, SSH + docker compose pull on a VM,"
+          echo "or AWS/GCP deploy action. Secrets go in the 'staging' Environment, not in code."

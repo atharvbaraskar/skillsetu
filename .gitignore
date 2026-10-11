@@ -1,0 +1,21 @@
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+!.env.example
+dist/
+build/
+.expo/
+coverage/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+*.log
+# model weights & datasets never go in git
+*.pt
+*.pth
+*.onnx
+*.h5
+data/raw/

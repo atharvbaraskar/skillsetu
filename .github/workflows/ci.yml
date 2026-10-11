@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Decide which parts of the monorepo changed, so we only test what is needed.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.f.outputs.backend }}
+      ai: ${{ steps.f.outputs.ai }}
+      admin: ${{ steps.f.outputs.admin }}
+      mobile: ${{ steps.f.outputs.mobile }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            shared: &shared
+              - '.github/workflows/**'
+              - 'infra/**'
+            backend:
+              - *shared
+              - 'services/backend/**'
+            ai:
+              - *shared
+              - 'services/ai/**'
+            admin:
+              - *shared
+              - 'apps/admin/**'
+            mobile:
+              - *shared
+              - 'apps/mobile/**'
+
+  backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/backend
+    # Uncomment when integration tests need a database:
+    # services:
+    #   db:
+    #     image: postgis/postgis:16-3.4
+    #     env: { POSTGRES_USER: test, POSTGRES_PASSWORD: test, POSTGRES_DB: test }
+    #     ports: ["5432:5432"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # After committing package-lock.json, add:  cache: npm  cache-dependency-path: services/backend/package-lock.json
+      - run: npm install   # switch to `npm ci` once package-lock.json is committed
+      - run: npm run lint
+      - run: npm test
+
+  ai:
+    needs: changes
+    if: needs.changes.outputs.ai == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: services/ai/requirements*.txt
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -q
+
+  admin:
+    needs: changes
+    if: needs.changes.outputs.admin == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  mobile:
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install
+      - run: npm run lint
+      - run: npm test
+
+  docker:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.ai == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, ai]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.service }} image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: services/${{ matrix.service }}
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # The ONLY check you mark as "required" in branch protection.
+  # It passes when every job above passed or was legitimately skipped.
+  ci-gate:
+    if: always()
+    needs: [backend, ai, admin, mobile, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - run: echo "All required checks passed"

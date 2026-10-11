@@ -1,0 +1,13 @@
+openapi: 3.0.3
+info:
+  title: SkillSetu API (contract, edit via PR, tag all owners)
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      summary: Liveness check
+      responses:
+        "200":
+          description: OK
+  # TODO (backend lead): /auth, /bookings, /workers, /verification-cases, /payments
+  # TODO (AI lead): internal /v1/problem-match, /v1/document-check, /v1/video-review, /v1/fraud-detect, /v1/trust-rank

@@ -1,0 +1,9 @@
+# Replace @username with real GitHub handles. Owners are auto-requested as reviewers.
+*                          @TEAM_LEAD
+/apps/mobile/              @MOBILE_LEAD
+/apps/admin/               @ADMIN_LEAD
+/services/backend/         @BACKEND_LEAD
+/services/ai/              @AI_LEAD
+/infra/                    @BACKEND_LEAD @TEAM_LEAD
+/.github/                  @TEAM_LEAD
+/docs/api/                 @BACKEND_LEAD @AI_LEAD @MOBILE_LEAD
