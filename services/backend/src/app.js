@@ -1,3 +1,4 @@
+// Backend entry point: routes are mounted here
 const express = require("express");
 
 const app = express();
