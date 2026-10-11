@@ -24,7 +24,7 @@ jobs:
       mobile: ${{ steps.f.outputs.mobile }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: f
         with:
           filters: |
