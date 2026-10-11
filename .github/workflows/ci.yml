@@ -23,7 +23,7 @@ jobs:
       admin: ${{ steps.f.outputs.admin }}
       mobile: ${{ steps.f.outputs.mobile }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v3
         id: f
         with:
@@ -58,7 +58,7 @@ jobs:
     #     env: { POSTGRES_USER: test, POSTGRES_PASSWORD: test, POSTGRES_DB: test }
     #     ports: ["5432:5432"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -75,7 +75,7 @@ jobs:
       run:
         working-directory: services/ai
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -94,7 +94,7 @@ jobs:
       run:
         working-directory: apps/admin
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install
@@ -110,7 +110,7 @@ jobs:
       run:
         working-directory: apps/mobile
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm install
@@ -125,7 +125,7 @@ jobs:
       matrix:
         service: [backend, ai]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: docker/setup-buildx-action@v3
       - name: Build ${{ matrix.service }} image (no push)
         uses: docker/build-push-action@v6
