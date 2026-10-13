@@ -59,7 +59,7 @@ jobs:
     #     ports: ["5432:5432"]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 20
           # After committing package-lock.json, add:  cache: npm  cache-dependency-path: services/backend/package-lock.json
@@ -95,7 +95,7 @@ jobs:
         working-directory: apps/admin
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 24 }
       - run: npm install
       - run: npm run lint
@@ -111,7 +111,7 @@ jobs:
         working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 24 }
       - run: npm install
       - run: npm run lint
